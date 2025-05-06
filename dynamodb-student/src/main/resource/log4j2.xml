@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <!-- 输出到文件 -->
+        <File name="FileLogger" fileName="logs/app.log">
+            <PatternLayout pattern="%d [%t] %-5level: %msg%n%throwable"/>
+        </File>
+
+        <!-- 同时输出到控制台 -->
+        <Console name="ConsoleLogger" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d [%t] %-5level: %msg%n%throwable"/>
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="ConsoleLogger"/>
+            <AppenderRef ref="FileLogger"/>
+        </Root>
+    </Loggers>
+</Configuration>
