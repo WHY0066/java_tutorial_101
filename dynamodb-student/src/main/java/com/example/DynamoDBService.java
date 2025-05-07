@@ -7,21 +7,28 @@ import software.amazon.awssdk.services.dynamodb.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import java.util.*;
 
-public class DynamoDBService {
+public class DynamoDBService implements AutoCloseable {
     private static final Logger logger = LogManager.getLogger(DynamoDBService.class);
     private final DynamoDbClient ddb;
     private final String tableName = "student";
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    // 构造方法中初始化 DynamoDbClient
+    @Override
+    public void close() {
+        ddb.close();
+    }
+
     public DynamoDBService() {
         ddb = DynamoDbClient.builder()
-                .region(Region.US_WEST_2) 
+                .region(Region.US_WEST_2)
                 .build();
     }
 
-    // 插入学生数据
     public void addStudent(String id, String name, String school) {
         Map<String, AttributeValue> item = new HashMap<>();
         item.put("student_id", AttributeValue.builder().s(id).build());
@@ -35,37 +42,42 @@ public class DynamoDBService {
 
         try {
             ddb.putItem(request);
-            System.out.println("Inserting student: " + id);  // 输出到命令行
-            logger.info("Student added: ID={} Name={} School={}", id, name, school);  // 打印日志
+            logger.info("Student added: ID={} Name={} School={}", id, name, school);
         } catch (DynamoDbException e) {
             logger.error("Failed to add student", e);
         }
     }
-
-    // 查询学生数据
-    public void getStudent(String id) {
-        Map<String, AttributeValue> key = new HashMap<>();
-        key.put("student_id", AttributeValue.builder().s(id).build());
-    
-        GetItemRequest request = GetItemRequest.builder()
-                .tableName(tableName)
-                .key(key)
-                .build();
+    public String getStudent(String id) {
+        Map<String, AttributeValue> key = Map.of(
+            "student_id", AttributeValue.builder().s(id).build()
+        );
     
         try {
-            Map<String, AttributeValue> item = ddb.getItem(request).item();
-            if (item != null) {
-                // 打印日志，直接输出学生信息
-                String studentId = item.get("student_id").s();
-                String studentName = item.get("student_name").s();
-                String schoolId = item.get("school_id").s();
-                
-                logger.info("Student found: ID={} Name={} School={}", studentId, studentName, schoolId);  // 打印日志
+            GetItemResponse response = ddb.getItem(GetItemRequest.builder()
+                    .tableName(tableName)
+                    .key(key)
+                    .build());
+    
+            if (response.hasItem()) {
+                Map<String, AttributeValue> item = response.item();
+                ObjectNode json = objectMapper.createObjectNode();
+                json.put("student_id", item.get("student_id").s());
+                json.put("student_name", item.get("student_name").s());
+                json.put("school_id", item.get("school_id").s());
+    
+                String resultJson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
+                logger.info( resultJson);
+                return resultJson;
             } else {
-                logger.warn("Student not found: " + id);
+                String notFoundMsg = "Student " + id + " not found";
+                logger.warn( notFoundMsg); 
+                return "{\"error\": \"" + notFoundMsg + "\"}";
             }
-        } catch (DynamoDbException e) {
-            logger.error("Error getting student", e);
+        } catch (Exception e) {
+            logger.error( e.getMessage(), e); 
+            return "{\"error\": \"" + e.getMessage().replace("\"", "'") + "\"}";
         }
     }
+    
 }
+

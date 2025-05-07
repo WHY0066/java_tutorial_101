@@ -4,7 +4,7 @@ Dynamodb Exercise
 1. java code to be able to connect to AWS account 
 2. In aws account, create dynamo table : student
 3. Insert student json objects to student table
-4. read student record with/without ID , return student JSON objects  //5.6 can't return student json object can't see message in log file
+4. read student record with/without ID , return student JSON objects  //5.6 can't return student json object can't see message in log file// 5.7 done
 5. Bonus: use spring boot to create API end point for READ 
 
 
