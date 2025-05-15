@@ -2,20 +2,25 @@ package com.example;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        String jsonPath = "data.json";
-        String parquetPath = "data.parquet";
-        String bucketName = "your-s3-bucket";
-        String parquetKey = "parquet/data.parquet";
-        String jsonKey = "json/data.json";
-        String dynamoTable = "your-dynamo-table";
+        String jsonPath = "src/main/resources/data.json";
+        String parquetPath = "output/output.parquet";
 
-        JsonToParquetConverter converter = new JsonToParquetConverter();
-        converter.convertJsonToParquet(jsonPath, parquetPath, converter.getSchema());
+        String bucketName = "your-s3-bucket-name";
+        String parquetS3Key = "parquet/output.parquet";
+        String jsonS3Key = "data/data.json";
 
-        S3Uploader uploader = new S3Uploader();
-        uploader.uploadToS3(bucketName, parquetKey, parquetPath);
+        String tableName = "your-dynamodb-table-name";
 
-        S3ToDynamoUploader jsonUploader = new S3ToDynamoUploader();
-        jsonUploader.uploadJsonToDynamo(bucketName, jsonKey, dynamoTable);
+        // 1. JSON 转 Parquet
+        JsonToParquet.convert(jsonPath, parquetPath);
+
+        // 2. 上传 Parquet 到 S3
+        S3Uploader.uploadToS3(bucketName, parquetS3Key, parquetPath);
+
+        // 3. 上传 JSON 到 S3
+        S3Uploader.uploadToS3(bucketName, jsonS3Key, jsonPath);
+
+        // 4. 从 S3 上传 JSON 到 DynamoDB
+        S3ToDynamoUploader.uploadJsonFromS3(bucketName, jsonS3Key, tableName);
     }
 }
