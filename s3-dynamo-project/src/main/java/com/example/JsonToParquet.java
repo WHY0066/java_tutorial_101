@@ -8,40 +8,38 @@ import org.apache.parquet.hadoop.ParquetWriter;
 import org.apache.hadoop.fs.Path;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.File;
 import java.io.IOException;
 
 public class JsonToParquet {
-
     public static void convert(String jsonFilePath, String parquetFilePath) throws IOException {
-        // 这里用一个简单的示例 Avro schema，按需替换
-        String schemaStr = "{"
-                + "\"type\":\"record\","
-                + "\"name\":\"User\","
-                + "\"fields\":["
-                + "{\"name\":\"name\", \"type\":\"string\"},"
-                + "{\"name\":\"age\", \"type\":\"int\"}"
-                + "]"
-                + "}";
-        Schema avroSchema = new Schema.Parser().parse(schemaStr);
-
-        Path path = new Path(parquetFilePath);
-        ParquetWriter<GenericRecord> writer = AvroParquetWriter.<GenericRecord>builder(path)
-                .withSchema(avroSchema)
-                .build();
-
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode root = mapper.readTree(new File(jsonFilePath));
-
-        if (root.isArray()) {
-            for (JsonNode node : root) {
-                GenericRecord record = new GenericData.Record(avroSchema);
+        String schemaStr = """
+            {
+                "type": "record",
+                "name": "User",
+                "fields": [
+                    {"name": "id", "type": "string"},
+                    {"name": "name", "type": "string"},
+                    {"name": "age", "type": "int"}
+                ]
+            }""";
+        
+        Schema schema = new Schema.Parser().parse(schemaStr);
+        
+        try (ParquetWriter<GenericRecord> writer = AvroParquetWriter.<GenericRecord>builder(new Path(parquetFilePath))
+                .withSchema(schema)
+                .build()) {
+            
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode jsonArray = mapper.readTree(new File(jsonFilePath));
+            
+            for (JsonNode node : jsonArray) {
+                GenericRecord record = new GenericData.Record(schema);
+                record.put("id", node.get("id").asText());
                 record.put("name", node.get("name").asText());
                 record.put("age", node.get("age").asInt());
                 writer.write(record);
             }
         }
-        writer.close();
     }
 }
