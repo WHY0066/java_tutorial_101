@@ -114,7 +114,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.6.0</version>
                 <configuration>
-                    <mainClass>com.example.datapipeline.S3ToDynamoDB</mainClass>
+                    <mainClass>com.example.datapipeline.test</mainClass>
                 </configuration>
             </plugin>
         </plugins>

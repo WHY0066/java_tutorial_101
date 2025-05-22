@@ -745,3 +745,8 @@ com.amazonaws.services.s3.model.AmazonS3Exception: User: arn:aws:iam::1179179965
 	at java.lang.reflect.Method.invoke(Method.java:498)
 	at org.codehaus.mojo.exec.ExecJavaMojo$1.run(ExecJavaMojo.java:282)
 	at java.lang.Thread.run(Thread.java:748)
+2025-05-22 11:48:06,988 [com.example.datapipeline.S3ToDynamoDB.main()] INFO : 程序启动，Region=eu-north-1, Bucket=s3exercisebucketwhy, JSON文件=data/data.json, DynamoDB表=tests3todynamodb
+2025-05-22 11:48:09,018 [com.example.datapipeline.S3ToDynamoDB.main()] INFO : 成功读取 S3 JSON，长度=87 字符
+2025-05-22 11:48:10,138 [com.example.datapipeline.S3ToDynamoDB.main()] INFO : 写入成功：id=1
+2025-05-22 11:48:10,363 [com.example.datapipeline.S3ToDynamoDB.main()] INFO : 写入成功：id=2
+2025-05-22 11:48:10,363 [com.example.datapipeline.S3ToDynamoDB.main()] INFO : 上传完成，成功=2 条，失败=0 条

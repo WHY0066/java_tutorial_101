@@ -11,7 +11,7 @@ Dynamodb Exercise
 S3 Exercise
 1. create a json data file into Parquet format 
 2. upload the Parquet file to AWS S3
-3. upload the json data from S3 to dynamo  //5.22 have some problem with aws permission
+3. upload the json data from S3 to dynamo  //5.22 upload successful
 
 Relational Database Exercise //5.14 start learn https://www.postgresql.org/docs/current/index.html 
 1. create PostgresQL  db

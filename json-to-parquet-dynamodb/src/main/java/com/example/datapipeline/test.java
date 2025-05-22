@@ -31,7 +31,7 @@ public class test {
            // uploader.uploadFile(BUCKET_NAME, S3_KEY1, OUTPUT_PARQUET);
             //uploader.uploadFile(BUCKET_NAME, S3_KEY2, INPUT_JSON);
 
-            //logger.info("4️⃣ Parquet 上传到 S3 成功");
+            
 
             S3ToDynamoDB.run(REGION, BUCKET_NAME, S3_KEY2, DYNAMODB_TABLE);
             logger.info("JSON 文件已写入 DynamoDB");

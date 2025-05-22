@@ -20,11 +20,9 @@ public class S3ToDynamoDB {
 
     private static final Logger logger = LogManager.getLogger(S3ToDynamoDB.class);
 
-    // ✅ 添加这个方法！
+    
     public static void run(String region, String bucketName, String jsonKey, String tableName) {
-        logger.info("程序启动，Region={}, Bucket={}, JSON文件={}, DynamoDB表={}",
-                region, bucketName, jsonKey, tableName);
-
+        
         try {
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
                     .withRegion(region)
@@ -40,7 +38,7 @@ public class S3ToDynamoDB {
             }
             String jsonString = sb.toString();
 
-            logger.info("成功读取 S3 JSON，长度={} 字符", jsonString.length());
+           
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(jsonString);
@@ -51,10 +49,7 @@ public class S3ToDynamoDB {
             DynamoDB dynamoDB = new DynamoDB(dynamoDBClient);
             Table table = dynamoDB.getTable(tableName);
 
-            if (!rootNode.isArray()) {
-                logger.error("JSON 文件格式错误：应为数组");
-                return;
-            }
+            
 
             int successCount = 0;
             int failCount = 0;
@@ -72,22 +67,19 @@ public class S3ToDynamoDB {
 
                     table.putItem(item);
                     successCount++;
-                    logger.info("写入成功：id={}", id);
+                    logger.info("id={}", id);
                 } catch (Exception e) {
                     failCount++;
-                    logger.error("写入失败：记录={}，错误={}", node.toString(), e.getMessage());
+                    logger.error("fail：record={}，error={}", node.toString(), e.getMessage());
                 }
             }
 
-            logger.info("上传完成，成功={} 条，失败={} 条", successCount, failCount);
+            
 
         } catch (Exception e) {
-            logger.error("程序运行异常：", e);
+            logger.error("error in S3ToDynamoDB：", e);
         }
     }
 
-    // 可选保留 main 方法
-    public static void main(String[] args) {
-        run("eu-north-1", "s3exercisebucketwhy", "data/data.json", "tests3todynamodb");
-    }
+    
 }

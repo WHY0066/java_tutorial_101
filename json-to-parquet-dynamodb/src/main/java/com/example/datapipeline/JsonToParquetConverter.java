@@ -35,7 +35,7 @@ public class JsonToParquetConverter {
 
             JsonNode sampleNode = root.get(0);
             Schema avroSchema = buildSchemaFromJson(sampleNode);
-           // logger.info("📜 AVRO Schema 构建成功：\n{}", avroSchema.toString(true));
+           
 
             Path outputPath = new Path(OUTPUT_PARQUET);
             ParquetWriter<GenericRecord> writer = AvroParquetWriter
@@ -54,10 +54,10 @@ public class JsonToParquetConverter {
             }
 
             writer.close();
-            //logger.info("✅ 成功将 JSON 转换为 Parquet 文件：{}", OUTPUT_PARQUET);
+            
 
         } catch (Exception e) {
-           // logger.error("❌ 转换过程中发生异常: {}", e.getMessage(), e);
+            logger.error("error in JsonToParquet", e.getMessage(), e);
         }
     }
 
