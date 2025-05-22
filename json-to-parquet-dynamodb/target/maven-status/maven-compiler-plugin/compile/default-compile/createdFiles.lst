@@ -1,0 +1,4 @@
+com\example\datapipeline\S3ToDynamoDB.class
+com\example\datapipeline\JsonToParquetConverter.class
+com\example\datapipeline\S3Uploader.class
+com\example\datapipeline\test.class
